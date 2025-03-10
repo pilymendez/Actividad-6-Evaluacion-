@@ -51,10 +51,12 @@ def valores_nulos(df):
 
 #Función 4
 def rango_iqr (df):
+    import pandas as pd
     import numpy as np 
     import matplotlib.pyplot as plt
     cuantitativas = df.select_dtypes(include=['float64','float','int','int64'])
     y = cuantitativas
+    cualitativas = df.select_dtypes(include=['object', 'datetime','category'])
 
     percentile25 = y.quantile (0.25) #Q1
     percentile75 = y.quantile(0.75) #Q3
@@ -63,6 +65,17 @@ def rango_iqr (df):
     Limite_Superior_iqr = percentile75 + 1.5 * iqr
     Limite_Inferior_iqr = percentile25 - 1.5 * iqr
 
-    return('Limite superior permitido:',Limite_Superior_iqr,
-       'Limite inferior permitido:',Limite_Inferior_iqr)
+    print("Limite superior permitido",Limite_Superior_iqr)
+    print("Limite inferior permitido",Limite_Inferior_iqr)
+
+    df1 = cuantitativas [(y<=Limite_Superior_iqr)&(y>=Limite_Inferior_iqr)]
+    df1 = df1.fillna(round(df1.mean(),1))
+
+    df_limpios = pd.concat([cualitativas, df1], axis=1)
+
+    return df_limpios.to_csv("Evaluacion_6.csv")
+    
+    
+
+
     
